@@ -147,6 +147,19 @@ impl Record {
         Record { inner, header }
     }
 
+    pub fn empty_record(&self) -> Record {
+        Record::new(Rc::clone(&self.header))
+    }
+
+    pub fn copy(&self, other_record: &mut Record) -> Self {
+        let inner = unsafe {
+            let inner = htslib::bcf_dup(other_record.inner);
+            inner
+        };
+        let header = Rc::clone(&self.header);
+        Record { inner, header } 
+    }
+
     /// Force unpacking of internal record values.
     pub fn unpack(&mut self) {
         unsafe { htslib::bcf_unpack(self.inner, htslib::BCF_UN_ALL as i32) };
