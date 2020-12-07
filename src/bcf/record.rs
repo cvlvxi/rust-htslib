@@ -151,13 +151,22 @@ impl Record {
         Record::new(Rc::clone(&self.header))
     }
 
+    pub fn copy_basics(
+        &self,
+        record: &mut Record,
+        copy_record: &Record
+    ) {
+        record.set_rid(copy_record.rid());
+        record.set_pos(copy_record.pos());
+        record.set_qual(copy_record.qual());
+        record.set_id(&*copy_record.id()).expect("couldn't copy");
+        record.set_alleles(&*copy_record.alleles()).expect("couldn't copy");
+    }
+
     pub fn copy(&self, other_record: &mut Record) -> Self {
-        let inner = unsafe {
-            let inner = htslib::bcf_dup(other_record.inner);
-            inner
-        };
-        let header = Rc::clone(&self.header);
-        Record { inner, header } 
+        let mut new_record = self.empty_record();
+        self.copy_basics(&mut new_record, other_record);
+        return new_record;
     }
 
     /// Force unpacking of internal record values.
