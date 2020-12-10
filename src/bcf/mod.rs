@@ -138,6 +138,16 @@ impl Reader {
         }
     }
 
+    pub fn copy_header_reader(&mut self, other_reader: &IndexedReader) {
+        let new_header_view = Rc::clone(&other_reader.header);
+        self.header = new_header_view;
+    }
+
+    pub fn copy_header_writer(&mut self, writer: &Writer) {
+        let new_header_view = Rc::clone(&writer.header);
+        self.header = new_header_view;
+    }
+
     /// Create a new reader from a given URL.
     pub fn from_url(url: &Url) -> Result<Self> {
         Self::new(url.as_str().as_bytes())
@@ -229,6 +239,16 @@ impl IndexedReader {
             Some(p) => Err(Error::FileNotFound { path: p.into() }),
             None => Err(Error::NonUnicodePath),
         }
+    }
+
+    pub fn copy_header_reader(&mut self, other_reader: &IndexedReader) {
+        let new_header_view = Rc::clone(&other_reader.header);
+        self.header = new_header_view;
+    }
+
+    pub fn copy_header_writer(&mut self, writer: &Writer) {
+        let new_header_view = Rc::clone(&writer.header);
+        self.header = new_header_view;
     }
 
     /// Create a new `IndexedReader` from an URL.
